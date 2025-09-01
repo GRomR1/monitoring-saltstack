@@ -67,6 +67,7 @@ services:
 
   loki:
     image: grafana/loki:3.1.0 # tested on 3.1.0
+    container_name: loki
     command:
       ["--pattern-ingester.enabled=true", "--config.file=/etc/loki/loki.yaml"]
     ports:
@@ -93,6 +94,7 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.55.0
+    container_name: prometheus
     hostname: localhost
     command:
       - --config.file=/etc/prometheus.yaml
@@ -166,6 +168,7 @@ services:
 
   grafana:
     image: grafana/grafana:11.3.0 # tested on 11.1.0
+    container_name: grafana
     volumes:
       - ./etc/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./etc/grafana/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
@@ -301,8 +304,6 @@ services:
     volumes:
       - ./saltstack/master/config:/etc/salt/master.d
       - ./saltstack/master/roots:/srv/roots
-      - ./saltstack/master/roots/engines:/srv/roots/engines
-      - ./saltstack/master/log_handlers:/var/cache/salt/master/extmods/log_handlers
 
   salt-minion:
     build:

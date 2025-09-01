@@ -1,5 +1,8 @@
+# https://grafana.com/docs/loki/latest/configure/
+
 # Disable multi-tenancy, ensuring a single tenant for all log streams.
 auth_enabled: false
+
 
 # Configuration block for the Loki server.
 server:
@@ -10,6 +13,9 @@ server:
 limits_config:
   volume_enabled: true
   allow_structured_metadata: true
+  # Discover and add log levels during ingestion, if not present already. 
+  # valid values from 'trace', 'debug', 'info', 'warn', 'error', 'critical',
+  discover_log_levels: false
 
 common:
   path_prefix: /loki
