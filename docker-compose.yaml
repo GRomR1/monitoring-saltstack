@@ -103,8 +103,8 @@ services:
     volumes:
       - ./etc/prometheus/prometheus.yaml:/etc/prometheus.yaml
       - prometheus_pyrra:/etc/prometheus/pyrra
-    ports:
-      - "9090:9090"
+    # ports:
+    #   - "9090:9090"
 
   # alertmanager:
   #   image: prom/alertmanager:v0.27.0
@@ -288,15 +288,15 @@ services:
     build:
       context: ./saltstack/master
       args:
-        - ARCH=arm64 # or amd64
+        - ARCH=amd64 # arm64 or amd64
     # entrypoint: [""]
     # command:
     #   - /bin/salt-master
     depends_on:
-      - tcpdump
+      # - tcpdump
       - vector
     ports:
-      - "8000:8000" # salt api
+      # - "8000:8000" # salt api
       - "2112:2112" # salt metrics
     volumes:
       - ./saltstack/master/config:/etc/salt/master.d
@@ -308,7 +308,7 @@ services:
     build:
       context: ./saltstack/minion
       args:
-        - ARCH=arm64 # or amd64
+        - ARCH=amd64 # arm64 or amd64
     container_name: minion
     # entrypoint: [""]
     # command:
@@ -341,7 +341,7 @@ services:
   #   # - "9998:9998/udp"
 
   cadvisor:
-    # image: gcr.io/cadvisor/cadvisor:v0.52.0
+    image: gcr.io/cadvisor/cadvisor:v0.52.0
     # image: gcr.io/cadvisor/cadvisor:v0.47.1
     # image: gcr.io/cadvisor/cadvisor-arm64:v0.52.0
     # platform: linux/aarch64
