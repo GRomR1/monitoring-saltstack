@@ -11,7 +11,7 @@ schedule:
     seconds: 10
     maxrunning: 1
 
-  get-big-payload:
+  get-low-payload-2-10:
     enabled: true
     run_on_start: true
     function: big_payload.call
@@ -19,6 +19,51 @@ schedule:
     args:
       - 2 # number of rows (items inf array)
       - 10 # number of charecters in rows
+
+  get-low-payload-10-100:
+    enabled: true
+    run_on_start: true
+    function: big_payload.call
+    seconds: 20
+    args:
+      - 10 # number of rows (items inf array)
+      - 100 # number of charecters in rows
+
+  get-mid-payload-50-1k:
+    enabled: true
+    run_on_start: true
+    function: big_payload.call
+    seconds: 30
+    args:
+      - 50 # number of rows (items inf array)
+      - 1000 # number of charecters in rows
+
+  get-mid-payload-200-1k:
+    enabled: true
+    run_on_start: true
+    function: big_payload.call
+    seconds: 40
+    args:
+      - 200 # number of rows (items inf array)
+      - 1000 # number of charecters in rows
+
+  get-big-payload-1k-1k:
+    enabled: true
+    run_on_start: true
+    function: big_payload.call
+    seconds: 50
+    args:
+      - 1000 # number of rows (items inf array)
+      - 1000 # number of charecters in rows
+
+  get-big-payload-1k-10k:
+    enabled: true
+    run_on_start: true
+    function: big_payload.call
+    seconds: 60
+    args:
+      - 1000 # number of rows (items inf array)
+      - 10000 # number of charecters in rows
 
   get-common-grains:
     enabled: true
