@@ -1,0 +1,54 @@
+api:
+  enabled: true
+  address: 0.0.0.0:8686
+sources:
+  syslog:
+    type: syslog
+    address: "0.0.0.0:9998"
+    mode: udp
+
+transforms:
+  remap:
+    type: remap
+    inputs:
+      - syslog
+    source: |
+      .message = replace!(.message, r'\u0000', "")
+      del(.hostname)
+      del(.facility)
+      del(.source_type)
+      del(.source_ip)
+      . = merge!(., .attributes)
+      del(.attributes)
+
+      # Extract the JID from the format "[JID: 20250829114551444887]" to just "20250829114551444887"
+      if exists(.jid) && .jid != "" {
+        # Use regex to extract just the numeric portion
+        .jid = parse_regex!(.jid, r'\[JID: (?P<jid>\d+)\]')
+        .jid = del(.jid.jid)
+      }
+
+      if match(string(.message) ?? "", r'jid[ =](?P<jid>\d+)') {
+        # Use regex to extract just the numeric portion
+        .jid = parse_regex!(.message, r'jid[ =](?P<jid>\d+)')
+        .jid = del(.jid.jid)
+      }
+
+sinks:
+  loki:
+    type: loki
+    inputs:
+      - remap
+    endpoint: "http://loki:3100"
+    healthcheck:
+      enabled: false
+    encoding:
+      codec: json
+    labels:
+      service_name: salt
+  # console:
+  #   inputs:
+  #     - remap
+  #   type: console
+  #   encoding:
+  #     codec: json
