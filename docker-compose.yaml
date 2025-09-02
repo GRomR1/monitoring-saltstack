@@ -1,3 +1,22 @@
+x-common-args: &common-args
+  ARCH: arm64 # arm64 or amd64
+
+x-salt-minion: &common-salt-minion
+  build:
+    context: ./saltstack/minion
+    args:
+      <<: *common-args
+  command: >
+    bash -c "sed "s/salt-minion/$(hostname)/g" /tmp/logging.conf > /etc/salt/minion.d/logging.conf &&
+            /bin/salt-minion"
+  volumes:
+    - ./saltstack/minion/config/default.conf:/etc/salt/minion.d/default.conf:ro
+    # - ./saltstack/minion/config/logging.conf:/etc/salt/minion.d/logging.conf:ro
+    - ./saltstack/minion/config/logging.conf:/tmp/logging.conf:ro
+  depends_on:
+    - salt-master
+    - vector
+
 services:
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
@@ -285,13 +304,12 @@ services:
   #     - ./etc/beyla/config.yml:/etc/beyla/config.yml
 
   salt-master:
-    image: saltstack-master
     container_name: master
     restart: unless-stopped
     build:
       context: ./saltstack/master
       args:
-        - ARCH=amd64 # arm64 or amd64
+        <<: *common-args
     # entrypoint: [""]
     # command:
     #   - /bin/salt-master
@@ -305,22 +323,26 @@ services:
       - ./saltstack/master/config:/etc/salt/master.d
       - ./saltstack/master/roots:/srv/roots
 
-  salt-minion:
-    build:
-      context: ./saltstack/minion
-      args:
-        - ARCH=amd64 # arm64 or amd64
-    container_name: minion
-    # entrypoint: [""]
-    # command:
-    #   - /bin/sleep
-    #   - infinity
-    volumes:
-      - ./saltstack/minion/config/default.conf:/etc/salt/minion.d/default.conf
-      - ./saltstack/minion/config/logging.conf:/etc/salt/minion.d/logging.conf
-    depends_on:
-      - salt-master
-      - vector
+  salt-minion01:
+    <<: *common-salt-minion
+    container_name: minion01
+    hostname: minion01
+  salt-minion02:
+    <<: *common-salt-minion
+    container_name: minion02
+    hostname: minion02
+  salt-minion03:
+    <<: *common-salt-minion
+    container_name: minion03
+    hostname: minion03
+  salt-minion04:
+    <<: *common-salt-minion
+    container_name: minion04
+    hostname: minion04
+  salt-minion05:
+    <<: *common-salt-minion
+    container_name: minion05
+    hostname: minion05
 
   vector:
     image: timberio/vector:0.49.0-debian
