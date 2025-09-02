@@ -1,5 +1,5 @@
 x-common-args: &common-args
-  ARCH: arm64 # arm64 or amd64
+  ARCH: amd64 # arm64 or amd64
 
 x-salt-minion: &common-salt-minion
   build:
